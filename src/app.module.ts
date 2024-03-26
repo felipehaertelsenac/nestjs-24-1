@@ -3,10 +3,9 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsuarioModule } from './usuario/usuario.module';
 import { TurmaModule } from './turma/turma.module';
-import { TesteModule } from './teste/teste.module';
 
 @Module({
-  imports: [UsuarioModule, TurmaModule, TesteModule],
+  imports: [UsuarioModule, TurmaModule],
   controllers: [AppController],
   providers: [AppService],
 })
