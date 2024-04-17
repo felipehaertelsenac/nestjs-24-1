@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity()
 export class Usuario {
@@ -6,13 +6,24 @@ export class Usuario {
     @PrimaryGeneratedColumn('increment')
     id: number;
 
-    @Column()
+    @Column({
+        length: 100
+    })
     nome: string
 
-    @Column()
+    @Column({
+        length: 150,
+        unique: true
+    })
     email: string
 
     @Column()
     senha: string
+
+    @CreateDateColumn()
+    createdAt:string
+
+    @UpdateDateColumn()
+    updatedAt:string
 
 }

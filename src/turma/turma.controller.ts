@@ -3,7 +3,7 @@ import { TurmaService } from './turma.service';
 import { CreateTurmaDto } from './dto/create-turma.dto';
 import { UpdateTurmaDto } from './dto/update-turma.dto';
 
-@Controller('turma')
+@Controller('turmas')
 export class TurmaController {
   constructor(private readonly turmaService: TurmaService) {}
 
