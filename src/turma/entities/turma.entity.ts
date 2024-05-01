@@ -1,4 +1,6 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
+import { Aluno } from "src/aluno/entities/aluno.entity"
+import { Professor } from "src/professor/entities/professor.entity"
+import { Column, CreateDateColumn, Entity, ManyToMany, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
 
 @Entity()
 export class Turma {
@@ -15,8 +17,11 @@ export class Turma {
     @Column()
     semestre: number
 
-    @Column()
-    professor: string
+    @ManyToOne(() => Professor, professor => professor.turmas)
+    professor: Professor;
+
+    @ManyToMany(() => Aluno, aluno => aluno.turmas)
+    alunos: Aluno[];
 
     @Column()
     curso: string

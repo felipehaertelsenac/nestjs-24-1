@@ -1,4 +1,4 @@
-import { IsInt, IsNumber, IsString } from "class-validator"
+import { ArrayUnique, IsArray, IsInt, IsNumber, IsOptional, IsString } from "class-validator"
 
 export class CreateTurmaDto {
 
@@ -12,9 +12,15 @@ export class CreateTurmaDto {
     semestre: number
 
     @IsString()
-    professor: string
-
-    @IsString()
     curso: string
+
+    @IsNumber()
+    @IsOptional()
+    professorId?: number
+
+    @IsArray()
+    @ArrayUnique()
+    @IsOptional()
+    alunoIds?: number[];
 
 }
