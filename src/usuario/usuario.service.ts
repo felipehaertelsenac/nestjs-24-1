@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Usuario } from "./entities/usuario.entity";
 import { Repository } from "typeorm";
@@ -21,19 +21,32 @@ export class UsuarioService {
         return this.usuarioRepository.find();
     }
 
-    listarUm(id: number){
+    async listarUm(id: number){
+        await this.exists(id);
         return this.usuarioRepository.findOneBy({id: id})
     }
 
-    update(id: number, updatePutUsuarioDTO:UpdatePutUsuarioDTO) {
+    async update(id: number, updatePutUsuarioDTO:UpdatePutUsuarioDTO) {
+        await this.exists(id);
         return this.usuarioRepository.update(id, updatePutUsuarioDTO)
     }
 
-    updateParcial(id: number, updatePatchUsuarioDTO:UpdatePatchUsuarioDTO) {
+    async updateParcial(id: number, updatePatchUsuarioDTO:UpdatePatchUsuarioDTO) {
+        await this.exists(id);
         return this.usuarioRepository.update(id, updatePatchUsuarioDTO)
     }
 
-    remove(id: number){
+    async remove(id: number){
+        await this.exists(id);
         return this.usuarioRepository.delete(id);
+    }
+
+    async exists(id: number) {
+        console.log(this.usuarioRepository.exists({where:{id}}));
+        if(!(this.usuarioRepository.exists({
+            where: { id }
+        }))) {
+            throw new NotFoundException("Usuario não existe!");
+        }
     }
 }
