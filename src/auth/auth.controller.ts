@@ -1,8 +1,10 @@
-import { Body, Controller, Headers, Post } from "@nestjs/common";
+import { Body, Controller, Headers, Post, Req, UseGuards } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { AuthLoginDTO } from "./dto/auth-login.dto";
 // import { UsuarioService } from "src/usuario/usuario.service";
 import { AuthRegistroDTO } from "./dto/auth-registro.dto";
+import { AuthGuard } from "src/guards/auth.guard";
+import { Usuario } from "src/decorators/usuario.decorator";
 
 @Controller('auth')
 export class AuthController {
@@ -21,9 +23,9 @@ export class AuthController {
         return this.authService.registro(body);
     }
 
+    @UseGuards(AuthGuard)
     @Post('me')
-    async me(@Headers("authorization") token){
-        // return token;
-        return this.authService.checkToken((token ?? '').split(' ')[1]);
+    async me(@Usuario() user){
+        return {user};
     }
 }

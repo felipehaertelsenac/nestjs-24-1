@@ -1,10 +1,11 @@
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { BadRequestException, Injectable, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Usuario } from "src/usuario/entities/usuario.entity";
 import { Repository } from "typeorm";
 import { AuthRegistroDTO } from "./dto/auth-registro.dto";
 import { UsuarioService } from "src/usuario/usuario.service";
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService{
@@ -26,7 +27,7 @@ export class AuthService{
                 nome: user.nome,
                 email: user.email
             }, {
-                expiresIn: "10 seconds",
+                expiresIn: "10 days",
                 subject: String(user.id),
                 issuer: this.issuer,
                 audience: this.audience
@@ -35,10 +36,15 @@ export class AuthService{
     }
 
     checkToken(token: string) {
-        return this.jwtService.verify(token, {
-            issuer: this.issuer,
-            audience: this.audience            
-        });
+        try{
+            const data = this.jwtService.verify(token, {
+                issuer: this.issuer,
+                audience: this.audience            
+            });
+            return data
+        } catch (e) {
+            throw new BadRequestException(e)
+        } 
     }
 
     async login(email: string, senha: string) {
@@ -52,7 +58,8 @@ export class AuthService{
             throw new UnauthorizedException('E-mail ou senha incorretos.');
         }
 
-        if(senha !== user.senha) {
+        if (!await bcrypt.compare(senha, user.senha)){
+        // if(senha !== user.senha) {
             throw new UnauthorizedException('E-mail ou senha incorretos.');
         }
 

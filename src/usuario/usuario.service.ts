@@ -5,6 +5,7 @@ import { Repository } from "typeorm";
 import { CreateUsuarioDTO } from "./dto/create-usuario.dto";
 import { UpdatePutUsuarioDTO } from "./dto/update-put-usuario.dto";
 import { UpdatePatchUsuarioDTO } from "./dto/update-patch-usuario.dto";
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsuarioService {
@@ -13,7 +14,9 @@ export class UsuarioService {
         private usuarioRepository: Repository<Usuario> 
     ){}
 
-    create(createUsuarioDTO: CreateUsuarioDTO){
+    async create(createUsuarioDTO: CreateUsuarioDTO){
+        const salto = await bcrypt.genSalt();
+        createUsuarioDTO.senha = await bcrypt.hash(createUsuarioDTO.senha, salto);
         return this.usuarioRepository.save(createUsuarioDTO)
     }
 
@@ -28,11 +31,15 @@ export class UsuarioService {
 
     async update(id: number, updatePutUsuarioDTO:UpdatePutUsuarioDTO) {
         await this.exists(id);
+        const salto = await bcrypt.genSalt();
+        updatePutUsuarioDTO.senha = await bcrypt.hash(updatePutUsuarioDTO.senha, salto);
         return this.usuarioRepository.update(id, updatePutUsuarioDTO)
     }
 
     async updateParcial(id: number, updatePatchUsuarioDTO:UpdatePatchUsuarioDTO) {
         await this.exists(id);
+        const salto = await bcrypt.genSalt();
+        updatePatchUsuarioDTO.senha = await bcrypt.hash(updatePatchUsuarioDTO.senha, salto);
         return this.usuarioRepository.update(id, updatePatchUsuarioDTO)
     }
 
