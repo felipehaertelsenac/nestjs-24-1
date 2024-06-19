@@ -6,6 +6,7 @@ import { Repository } from "typeorm";
 import { AuthRegistroDTO } from "./dto/auth-registro.dto";
 import { UsuarioService } from "src/usuario/usuario.service";
 import * as bcrypt from 'bcrypt';
+import { MailerService } from "@nestjs-modules/mailer";
 
 @Injectable()
 export class AuthService{
@@ -17,7 +18,8 @@ export class AuthService{
         private readonly jwtService: JwtService,
         @InjectRepository(Usuario)
         private usuarioRepository: Repository<Usuario>,
-        private readonly usuarioService: UsuarioService
+        private readonly usuarioService: UsuarioService,
+        private readonly mailerService: MailerService
     ){}
 
     createToken(user:Usuario){
@@ -70,6 +72,31 @@ export class AuthService{
         const user = await this.usuarioService.create(data);
 
         return this.createToken(user);
+    }
+
+    async forget(email: string) {
+        const user = await this.usuarioRepository.findOne({
+            where: {
+               email 
+            }
+        })
+
+        if (!user) {
+            throw new UnauthorizedException('E-mail incorretos.');
+        }
+
+        // enviar e-mail
+        await this.mailerService.sendMail({
+            subject: 'Recuperação de senha',
+            to: user.email,
+            template: 'forget',
+            context: {
+                nome: user.nome
+            }
+        })
+        
+
+        return true;
     }
 
 }
