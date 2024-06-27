@@ -1,0 +1,39 @@
+# Define a versão do arquivo Docker Compose
+version: '3.8'
+
+# Define os serviços que compõem a aplicação 
+services:
+  app: # Define um serviço chamado app
+    build: # Especifica como vai ser contruída a imagem Docker para o serviço
+      context: . # Definir o diretório de contexto de construção para o diretório atual
+      dockerfile: Dockerfile # especifica que o Dockerfile a ser utilizado se chama Dockerfile
+    container_name: esii_nest_manha # Define um nome para o nosso contêiner
+    ports:
+      - "3000:3000" # Mapear a porta 3000 do host para a porta 3000 do contêiner
+    volumes:
+      - .:/app # Mapear o diretório atual do host para /app do container
+      - /app/node_modules # Monta o volume para node_modules, para garantir que as dependencia instaladas no conteiner não interfiram no host
+    environment: # Define as váriaveis de ambiente para o conteiner
+      - NODE_ENV=production #Define o ambiente NODE como produção
+      - DB_HOST=mysql # Especifica o host do banco como mysql
+      - DB_PORT=3306 # Define a porta do banco
+      - DB_USER=root # Define usuário do banco
+      - DB_PASSWORD=123456 # Define a senha do banco
+      - DB_NAME=esii_manha # Define o nome da database
+    depends_on:
+      - mysql #Define que o serviço app depende do serviço mysql
+    command: npm run start:dev # Especifica o comando para iniciar a aplicação 
+
+  mysql: # Define um serviço chamado mysql
+    image: mysql:8.0 # Especifica a imagem docker a ser utilizada, neste caso o mysql 8.0
+    container_name: mysql # Define um nome para o contêiner
+    environment: # Definição de váriaveis de ambiente
+      MYSQL_ROOT_PASSWORD: 123456 # Senha do usuário root
+      MYSQL_DATABASE: esii_manha # Cria um banco de dados chamado esii_manhã
+    ports:
+      - "3307:3306" # Mapeia porta 3307 do host para a porta 3306, pois a porta 3306 já está sendo utilizada em meu PC
+    volumes:
+      - mysql-data:/var/lib/mysql # Define um volume nomeado de mysql-data para persistir dados no banco de dados 
+
+volumes:
+  mysql-data: #Define um volume mysql-data para ser utilizado para persistir os dados
