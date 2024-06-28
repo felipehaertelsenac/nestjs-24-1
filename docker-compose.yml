@@ -1,0 +1,39 @@
+# Define a versão do arquivo Docker Compose
+version: '3.8'
+
+# Define os serviços da aplicação
+services:
+  app: # Define um serviço de nome app
+    build: # Especificar como será contruía a imagem Docker para o serviço
+      context: . # Diretório de contexto de construção para o diretorio atual
+      dockerfile: Dockerfile # especificando o nome do Dockerfile utilizado na criação do conteiner
+    container_name: esii_nest_noite # Definir um  nome para o conteiner
+    ports:
+      - "3000:3000" # Mapear a porta 3000 do host e a porta 3000 do conteiner
+    volumes:
+      - .:/app # mapear o diretório atual do host para o /app do conteiner
+      - /app/node_modules # montar o volume para node_modules, garantindo que as dependencias instaladas no container não iterfiram no host
+    environment: # Define as váriaveis de ambiente para o conteiner
+      - NODE_ENV=production # Defini o ambiente NODE como produção
+      - DB_HOST=mysql # Especifica o host do banco como mysql
+      - DB_PORT=3306 # Define a porta do banco
+      - DB_USER=root # Define o usuário do banco
+      - DB_PASSWORD=esii1234 # Define a senha do banco
+      - DB_NAME=esii_noite # Define o nome da database
+    depends_on:
+      - mysql # Define a denpendencia do serviço app ao serviço mysql
+    command: npm run start:dev # Especifico o comando para iniciar a aplicação
+
+  mysql: # Define um serviço de nome mysql
+    image: mysql:8.0 # Especifica a imagem a ser utilizada
+    container_name: mysql # Defino o nome para o contêiner
+    environment: # Definição de variáveis de ambiente
+      MYSQL_ROOT_PASSWORD: esii1234 # senha do usuário root
+      MYSQL_DATABASE: esii_noite # cria um banco de dados chamado esii_noite
+    ports:
+      - "3307:3306" # mapeia a porta 3307 do host para a porta 3306 do container
+    volumes:
+      - mysql-data:/var/lib/mysql # Define um volume de nome mysql-data para persistir os dados no banco de dados
+
+volumes:
+  mysql-data: # Define um volume para ser utilizado para persistencia de dados

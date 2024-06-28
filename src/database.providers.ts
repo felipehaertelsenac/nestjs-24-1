@@ -2,11 +2,11 @@ import {DataSourceOptions} from "typeorm"
 
 export const config: DataSourceOptions = {
     type: 'mysql',
-    host: 'localhost',
+    host: 'mysql',
     port: 3306,
     username: 'root',
-    password: '1234',
-    database: 'nest',
+    password: 'esii1234',
+    database: 'esii_noite',
     entities: [__dirname + '/**/*.entity{.ts,.js}'],
     synchronize: true
 }
